@@ -34,7 +34,7 @@ class Classifier(Enum):
 
     @classmethod
     def get_default(cls):
-        return Classifier.RANDOM_FOREST
+        return Classifier.RF
 
     def get_name(self):
         return self.value['name']
