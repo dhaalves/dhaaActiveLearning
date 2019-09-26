@@ -21,7 +21,7 @@ pip3 install git+https://github.com/dhaalves/dhaaActiveLearning.git
 
 
 # Usage<a name="usage"></a>
-First, you need a folder named 'datasets' which, for each dataset, must contains at least 2 csv files (features, labels) respecting the following naming convention: 
+First, you need a folder named 'datasets' which, for each dataset, must contain at least 2 CSV files (features, labels) respecting the following naming convention:
 - features: '<dataset_name>_features.csv' **required**
 - labels: '<dataset_name>_labels.csv' **required**
 - filenames: '<dataset_name>_filenames.csv' **optional**
