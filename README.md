@@ -1,6 +1,6 @@
 
 # Installation<a name="installation"></a>
-dhaaActiveLearning requires
+dhaaActiveLearning requires Python >= 3.5
 - numpy
 - scipy
 - scikit-learn
@@ -11,7 +11,7 @@ dhaaActiveLearning requires
 
 You can install directly with pip:  
 ```
-pip install git+https://github.com/dhaalves/dhaaActiveLearning.git
+pip3 install git+https://github.com/dhaalves/dhaaActiveLearning.git
 ```
 
 
