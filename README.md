@@ -1,3 +1,8 @@
+# Implementations<a name="implementations"></a>
+- AL Strategies: ['EN', 'MS', 'LC', 'EN-CLU', 'MS-CLU', 'LC-CLU', 'RBE', 'DBE', 'MST-BE', 'MST-CLU-DS', 'MST-CLU-DDE', 'RDS', 'MST-CLU-RDS', 'MST-CLU-RDS2']
+- Classifiers: ['SVM', 'k-NN', 'RF', 'NB']
+- Datasets: ['LEA-53'] 
+
 
 # Installation<a name="installation"></a>
 dhaaActiveLearning requires Python >= 3.5
@@ -15,15 +20,15 @@ pip3 install git+https://github.com/dhaalves/dhaaActiveLearning.git
 ```
 
 
-# Usage<a name="installation"></a>
-First, you need a folder named 'datasets' which, for each dataset, it must contains 3 csv files (features, labels and filenames) respecting the following naming convention: 
-- features: <dataset_name>_features.csv
-- labels: <dataset_name>_labels.csv
-- filenames: <dataset_name>_filenames.csv
+# Usage<a name="usage"></a>
+First, you need a folder named 'datasets' which, for each dataset, must contains at least 2 csv files (features, labels) respecting the following naming convention: 
+- features: '<dataset_name>_features.csv' **required**
+- labels: '<dataset_name>_labels.csv' **required**
+- filenames: '<dataset_name>_filenames.csv' **optional**
 
 You can check an example dataset under 'datasets' folder of this repository.
 
-After that, you can run the follwing example (example.py):
+After that, you can run the following example (example.py):
 
 ```python
 import numpy as np

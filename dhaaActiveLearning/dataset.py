@@ -7,6 +7,7 @@ from google_drive_downloader import GoogleDriveDownloader as gdd
 
 dhaa_datasets = ['EGG-8' 'EGG-9' 'LAR-2' 'LEA-53' 'PAR-15' 'PAR-16' 'PRO-6' 'PRO-7']
 
+
 class Dataset:
     def __init__(self, name, files_path='datasets'):
         self.name = name
@@ -43,13 +44,16 @@ class Dataset:
 
     @classmethod
     def get_names(cls, files_path='datasets'):
-        return np.unique(list(map(lambda x: x.split('_')[0], os.listdir(files_path))))
+        return np.unique(list(map(lambda x: x[:x.rfind('_')], os.listdir(files_path))))
 
 
 def load_dataset(features_file, labels_file, filenames_file, files_path='datasets', test_size=None):
     features = pd.read_csv(os.path.join(files_path, features_file), header=None).values
     labels = pd.read_csv(os.path.join(files_path, labels_file), header=None).values
-    filenames = pd.read_csv(os.path.join(files_path, filenames_file), header=None).values
+    try:
+        filenames = pd.read_csv(os.path.join(files_path, filenames_file), header=None).values
+    except FileNotFoundError:
+        filenames = np.arange(len(labels))
     if test_size is not None:
         x_train, x_test, y_train, y_test, f_train, f_test = train_test_split(features, labels, filenames,
                                                                              test_size=test_size,

@@ -15,3 +15,5 @@ if __name__ == '__main__':
     al_params = AL_Parameters(dataset_name='LEA-53', classifier_name='RF', strategy_name='MS', max_iterations=20)
     results = dhaaActiveLearning.run(al_params=al_params, n_splits=1)
     results.save('LEA-53-results')
+    dataset ='LEA-43_dsa_44_features.csv'
+    print(dataset[:dataset.rfind('_')])
