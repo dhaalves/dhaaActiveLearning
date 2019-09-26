@@ -1,0 +1,7 @@
+numpy
+scipy
+tqdm
+pandas
+googledrivedownloader
+modAL
+scikit-learn
