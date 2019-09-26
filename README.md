@@ -23,7 +23,7 @@ First, you need a folder named 'datasets' which, for each dataset, it must conta
 
 You can check an example dataset under 'datasets' folder of this repository.
 
-After that you run the follwing example (example.py)
+After that, you can run the follwing example (example.py):
 
 ```python
 import numpy as np
