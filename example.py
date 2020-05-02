@@ -1,19 +1,20 @@
 import numpy as np
 
 import dhaaActiveLearning
-from dhaaActiveLearning import AL_Strategy, AL_Parameters
+from dhaaActiveLearning import ALStrategy, ALParams
 from dhaaActiveLearning.classification import Classifier
 from dhaaActiveLearning.dataset import Dataset
 
 if __name__ == '__main__':
     np.random.seed(1) #for reproducibility on some al strategies
 
-    print('AL Strategies:', AL_Strategy.get_names())
+    print('AL Strategies:', ALStrategy.get_names())
     print('Classifiers:', Classifier.get_names())
     print('Datasets:', Dataset.get_names())
 
-    al_params = AL_Parameters(dataset_name='LEA-53', classifier_name='RF', strategy_name='MS', max_iterations=20)
-    results = dhaaActiveLearning.run(al_params=al_params, n_splits=1)
-    results.save('LEA-53-results')
-    dataset ='LEA-43_dsa_44_features.csv'
-    print(dataset[:dataset.rfind('_')])
+    for s in ALStrategy.get_names():
+        params = ALParams(dataset_name='LEA-53', classifier_name='RF', strategy_name=s, max_iterations=5)
+        results = dhaaActiveLearning.run(params=params, n_splits=1)
+        print(results.get_mean_acc())
+    # results.save('LEA-53-results')
+    # print(np.load('LEA-53-results.npy'))

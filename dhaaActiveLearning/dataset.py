@@ -3,9 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from google_drive_downloader import GoogleDriveDownloader as gdd
 
-dhaa_datasets = ['EGG-8' 'EGG-9' 'LAR-2' 'LEA-53' 'PAR-15' 'PAR-16' 'PRO-6' 'PRO-7']
+dhaa_datasets = ['EGG-8', 'EGG-9', 'LAR-2', 'LEA-53' 'PAR-15', 'PAR-16', 'PRO-6', 'PRO-7']
 
 
 class Dataset:
@@ -61,9 +60,3 @@ def load_dataset(features_file, labels_file, filenames_file, files_path='dataset
                                                                              random_state=1)
         return x_train, y_train.ravel(), x_test, y_test.ravel(), f_train.ravel(), f_test.ravel()
     return features, labels.ravel(), filenames.ravel()
-
-
-def download_dataset():
-    gdd.download_file_from_google_drive(file_id='1U49CxFgAmCnIYVR2EIuB7C-oOzuRSJ3L',
-                                        dest_path='./datasets/dhaa_datasets.zip',
-                                        unzip=True)
