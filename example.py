@@ -12,9 +12,8 @@ if __name__ == '__main__':
     print('Classifiers:', Classifier.get_names())
     print('Datasets:', Dataset.get_names())
 
-    for s in ALStrategy.get_names():
-        params = ALParams(dataset_name='LEA-53', classifier_name='RF', strategy_name=s, max_iterations=5)
-        results = dhaaActiveLearning.run(params=params, n_splits=1)
-        print(results.get_mean_acc())
+    params = ALParams(dataset_name='LEA-53', classifier_name='RF', strategy_name='RDS', max_iterations=5)
+    results = dhaaActiveLearning.run(params=params, n_splits=1)
+    print(results.get_acc())
     # results.save('LEA-53-results')
     # print(np.load('LEA-53-results.npy'))

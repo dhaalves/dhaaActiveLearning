@@ -188,10 +188,10 @@ def get_samples(x, y, n_clusters=None, strategy=None):
         organized_data = get_mst_idx(x_pool)
     elif strategy in [ALStrategy.EN, ALStrategy.MS, ALStrategy.LC]:
         while True:
-            idx = np.random.choice(len(y), n_clusters, replace=False)
-            x_initial, y_initial = x[idx], y[idx]
+            root_idx = np.random.choice(len(y), n_clusters, replace=False)
+            x_initial, y_initial = x[root_idx], y[root_idx]
             if len(np.unique(y_initial)) > 1: break
-        x_pool, y_pool = np.delete(x, idx, axis=0), np.delete(y, idx, axis=0)
+        x_pool, y_pool = np.delete(x, root_idx, axis=0), np.delete(y, root_idx, axis=0)
     return organized_data, root_idx, x_initial, y_initial, x_pool, y_pool
 
 
@@ -382,15 +382,15 @@ class Results:
             self.results_dict[num_labeled_samples] = Metrics.get_metrics_dict()
         self.results_dict[num_labeled_samples][metric.value].append(value)
 
-    def get_mean(self, num_labeled_samples, metric):
-        return np.mean(self.results_dict[num_labeled_samples][metric.value])
-
     def save(self, filename):
         return np.save(filename, self.results_dict)
 
-    def get_mean_acc(self):
-        idx = list(self.results_dict.keys())[2:]
-        return np.mean([self.results_dict[i][Metrics.ACCURACY.value] for i in idx])
+    def get_mean(self, num_labeled_samples, metric):
+        return np.mean(self.results_dict[num_labeled_samples][metric.value])
+
+    def get_acc(self):
+        num_labeled_samples = list(self.results_dict.keys())[-1]
+        return np.mean(self.results_dict[num_labeled_samples][Metrics.ACCURACY.value])
 
 
 def run(params, n_splits=1, interactive=True):
@@ -418,7 +418,8 @@ class XY:
 
 class ALData:
 
-    def __init__(self, x_initial, y_initial, x_pool, y_pool, x_test, y_test, organized_data, learner):
+    def __init__(self, x_initial, y_initial, x_pool, y_pool, x_test, y_test, organized_data, learner, f_train,
+                 query_idx, classic_strategy):
         self.initial = XY(x_initial, y_initial)
         self.pool = XY(x_pool, y_pool)
         self.test = XY(x_test, y_test)
@@ -427,16 +428,20 @@ class ALData:
         self.learner = learner
         self.num_labeled_samples = len(x_initial)
         self.step = 1
+        self.currents = zip(y_initial, y_initial, f_train[query_idx])
+        self.f_train = np.delete(f_train, query_idx, axis=0)
 
     def n_instances_left(self, classic):
         return len(self.pool.y) if classic else len(self.organized_data)
 
-    def update(self, classic, query_idx, organized_data):
+    def update(self, classic, query_idx, predictions, organized_data):
+        self.currents = zip(predictions, self.pool.y[query_idx], self.f_train[query_idx])
         self.num_labeled_samples += len(query_idx)
         self.organized_data = organized_data
         if classic:
             self.pool.x = np.delete(self.pool.x, query_idx, axis=0)
             self.pool.y = np.delete(self.pool.y, query_idx, axis=0)
+            self.f_train = np.delete(self.f_train, query_idx, axis=0)
         else:
             self.labeled_idx = np.append(self.labeled_idx, query_idx)
         self.step += 1
@@ -446,6 +451,8 @@ class ALData:
 
 
 def init(params, split=None):
+    classic_strategy = params.strategy.is_classic()
+
     x_train, y_train, x_test, y_test, f_train, f_test = split if split else params.dataset.get_split()
 
     start_querying_time = timer()
@@ -469,7 +476,8 @@ def init(params, split=None):
     results.append(num_labeled_samples, Metrics.ACCURACY, learner.score(x_test, y_test))
     results.append(num_labeled_samples, Metrics.SELECTED_INDICES, root_idx.tolist())
 
-    data = ALData(x_initial, y_initial, x_pool, y_pool, x_test, y_test, organized_data, learner)
+    data = ALData(x_initial, y_initial, x_pool, y_pool, x_test, y_test, organized_data, learner, f_train, root_idx,
+                  classic_strategy)
     return data, results
 
 
@@ -487,16 +495,18 @@ def step(params, data, results):
     if query_idx is None or len(query_idx) < params.n_instances:
         return
 
+    predictions = data.learner.predict(data.pool.x[query_idx])
+
     start_classification_time = timer()
     data.learner.teach(X=data.pool.x[query_idx], y=data.pool.y[query_idx])
     end_classification_time = timer()
-
-    data.update(classic_strategy, query_idx, organized_data)
 
     results.append(data.num_labeled_samples, Metrics.QUERYING_TIME, start_querying_time - end_querying_time)
     results.append(data.num_labeled_samples, Metrics.CLASSIFICATION_TIME,
                    start_classification_time - end_classification_time)
     results.append(data.num_labeled_samples, Metrics.ACCURACY, data.learner.score(data.test.x, data.test.y))
     results.append(data.num_labeled_samples, Metrics.SELECTED_INDICES, query_idx.tolist())
+
+    data.update(classic_strategy, query_idx, predictions, organized_data)
 
     yield data
